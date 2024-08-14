@@ -4,7 +4,7 @@ The Game Center Ticket Management System is a web-based application designed to 
 Features:
 Add Tickets:
 
-Clients: Tickets for clients are issued with a 3-year expiration period. When adding a client ticket, you provide a user name, a unique ticket ID, and specify the ticket type as 'Client'.
+Clients: Tickets for clients are issued with a 3-year expiration period. When adding a client ticket, you provide a user name, a unique ticket ID (no real id needed just copy id from ticket or test it), and specify the ticket type as 'Client'.
 Workers: Tickets for workers do not expire. When adding a worker ticket, you provide a user name, a unique ticket ID, and specify the ticket type as 'Worker'.
 View Tickets:
 
