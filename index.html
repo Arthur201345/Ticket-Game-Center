@@ -13,6 +13,15 @@
         }
 
         .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-container, .ticket-container {
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
@@ -20,268 +29,295 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        h1, h2 {
-            text-align: center;
+        h1 {
+            margin-bottom: 20px;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input, select, button {
+        input {
             padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
             font-size: 16px;
         }
 
         button {
+            padding: 10px;
+            font-size: 16px;
             background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
+            width: 100%;
         }
 
         button:hover {
             background-color: #0056b3;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        .expired {
-            color: red;
-        }
-
-        .valid {
-            color: green;
-        }
-
-        .delete-btn, .renew-btn {
+        .logout-btn {
+            padding: 10px;
             background-color: red;
             color: white;
-            border: none;
             cursor: pointer;
-            padding: 5px 10px;
+            border: none;
+            font-size: 16px;
         }
 
-        .renew-btn {
-            background-color: green;
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
         }
 
-        .delete-btn:hover {
-            background-color: darkred;
+        .nav-buttons button {
+            width: 48%;
         }
 
-        .renew-btn:hover {
-            background-color: darkgreen;
-        }
-
-        .renew-btn:disabled {
-            background-color: grey;
-            cursor: not-allowed;
+        .button-group button {
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Game Center Ticket Management</h1>
 
-        <div class="form-section">
-            <h2>Add Ticket</h2>
-            <form id="ticketForm">
-                <label for="userName">User Name:</label>
-                <input type="text" id="userName" required>
-
-                <label for="ticketId">Ticket ID:</label>
-                <input type="text" id="ticketId" required>
-
-                <label for="ticketType">Ticket Type:</label>
-                <select id="ticketType" required>
-                    <option value="client">Client</option>
-                    <option value="worker">Worker</option>
-                </select>
-
-                <button type="submit">Add Ticket</button>
-            </form>
-        </div>
-
-        <div class="tickets-section">
-            <h2>Tickets</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User Name</th>
-                        <th>Ticket ID</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="ticketList">
-                    <!-- Ticket rows will be dynamically added here -->
-                </tbody>
-            </table>
-        </div>
+<!-- Landing Page -->
+<div id="landingPage" class="container">
+    <h1>Game Center Ticket Management</h1>
+    <div class="nav-buttons">
+        <button onclick="showSignUp()">Sign Up</button>
+        <button onclick="showLogin()">Log In</button>
     </div>
+</div>
 
-    <script>
-        window.onload = function() {
-            loadTicketsFromLocalStorage();
-        };
+<!-- Sign-Up Form -->
+<div id="signUpForm" class="container" style="display:none;">
+    <h1>Sign Up</h1>
+    <input type="text" id="signUpEmail" placeholder="Enter Email" required>
+    <input type="password" id="signUpPassword" placeholder="Enter Password" required>
+    <input type="text" id="signUpCompanyName" placeholder="Enter Company Name" required>
+    <button onclick="signUp()">Sign Up</button>
+</div>
 
-        document.getElementById('ticketForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+<!-- Log-In Form -->
+<div id="loginForm" class="container" style="display:none;">
+    <h1>Log In</h1>
+    <input type="text" id="loginEmail" placeholder="Enter Email" required>
+    <input type="password" id="loginPassword" placeholder="Enter Password" required>
+    <button onclick="logIn()">Log In</button>
+</div>
 
-            const userName = document.getElementById('userName').value;
-            const ticketId = document.getElementById('ticketId').value;
-            const ticketType = document.getElementById('ticketType').value;
+<!-- Profile Page -->
+<div id="profilePage" class="profile-container" style="display:none;">
+    <h1>Profile Page</h1>
+    <p><strong>Company Name:</strong> <span id="profileCompanyName"></span></p>
+    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+    <button class="logout-btn" onclick="logout()">Log Out</button>
+</div>
 
-            addTicket(userName, ticketId, ticketType);
-        });
+<!-- Ticket Management System -->
+<div id="ticketManagement" class="ticket-container" style="display:none;">
+    <h1>Game Center Ticket Management</h1>
+    <form id="ticketForm" onsubmit="addTicket(event)">
+        <label for="userName">User Name:</label>
+        <input type="text" id="userName" required>
+        <label for="ticketId">Ticket ID:</label>
+        <input type="text" id="ticketId" required>
+        <label for="ticketType">Ticket Type:</label>
+        <select id="ticketType" required>
+            <option value="client">Client</option>
+            <option value="worker">Worker</option>
+        </select>
+        <button type="submit">Add Ticket</button>
+    </form>
 
-        function addTicket(userName, ticketId, ticketType) {
-            const ticketList = document.getElementById('ticketList');
+    <h2>Tickets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Ticket ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ticketList"></tbody>
+    </table>
+</div>
 
-            const issueDate = new Date();
-            let expirationDate;
-            let status = '';
+<script>
+    // Show Sign-Up Form
+    function showSignUp() {
+        document.getElementById('landingPage').style.display = 'none';
+        document.getElementById('signUpForm').style.display = 'block';
+    }
 
-            if (ticketType === 'client') {
-                expirationDate = new Date(issueDate);
-                expirationDate.setFullYear(expirationDate.getFullYear() + 3);
+    // Show Login Form
+    function showLogin() {
+        document.getElementById('landingPage').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+    }
 
-                status = getTicketStatus(expirationDate);
-            } else {
-                status = `<span class="valid">No Expiry</span>`;
+    // Sign Up Functionality
+    function signUp() {
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
+        const companyName = document.getElementById('signUpCompanyName').value;
+
+        if (email && password && companyName) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.find(user => user.email === email)) {
+                alert('User with this email already exists!');
+                return;
             }
+            users.push({ email, password, companyName });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Sign-Up Successful! Please log in.');
+            showLogin();
+        } else {
+            alert('Please fill in all fields');
+        }
+    }
 
-            const ticket = {
-                userName: userName,
-                ticketId: ticketId,
-                ticketType: ticketType,
-                issueDate: issueDate,
-                expirationDate: expirationDate ? expirationDate : null
-            };
+    // Log In Functionality
+    function logIn() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
 
-            saveTicketToLocalStorage(ticket);
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(user => user.email === email && user.password === password);
+
+        if (user) {
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            showProfilePage(user);
+            showTicketManagement();
+        } else {
+            alert('Invalid email or password!');
+        }
+    }
+
+    // Show Profile Page and Ticket Management
+    function showProfilePage(user) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('profilePage').style.display = 'block';
+        document.getElementById('profileCompanyName').innerText = user.companyName;
+        document.getElementById('profileEmail').innerText = user.email;
+    }
+
+    function showTicketManagement() {
+        document.getElementById('ticketManagement').style.display = 'block';
+    }
+
+    // Logout Function
+    function logout() {
+        localStorage.removeItem('loggedInUser');
+        location.reload(); // Reload the page to reset
+    }
+
+    // Ticket Management System Logic
+
+    function addTicket(event) {
+        event.preventDefault();
+        
+        const userName = document.getElementById('userName').value;
+        const ticketId = document.getElementById('ticketId').value;
+        const ticketType = document.getElementById('ticketType').value;
+        
+        const issueDate = new Date();
+        let expirationDate;
+        let status = '';
+
+        if (ticketType === 'client') {
+            expirationDate = new Date(issueDate);
+            expirationDate.setFullYear(expirationDate.getFullYear() + 3);
+            status = getTicketStatus(expirationDate);
+        } else {
+            status = `<span class="valid">No Expiry</span>`;
+        }
+
+        const ticket = { userName, ticketId, ticketType, issueDate, expirationDate: expirationDate || null };
+        saveTicketToLocalStorage(ticket);
+        appendTicketToTable(ticket, status);
+        document.getElementById('ticketForm').reset();
+    }
+
+    function getTicketStatus(expirationDate) {
+        const now = new Date();
+        if (expirationDate > now) {
+            const timeLeft = calculateTimeLeft(expirationDate);
+            return `<span class="valid">Valid - Expires in ${timeLeft}</span>`;
+        } else {
+            return `<span class="expired">Expired</span>`;
+        }
+    }
+
+    function appendTicketToTable(ticket, status) {
+        const ticketList = document.getElementById('ticketList');
+        const row = document.createElement('tr');
+        row.setAttribute('data-ticket-id', ticket.ticketId);
+
+        row.innerHTML = `
+            <td>${ticket.userName}</td>
+            <td>${ticket.ticketId}</td>
+            <td>${ticket.ticketType.charAt(0).toUpperCase() + ticket.ticketType.slice(1)}</td>
+            <td>${status}</td>
+            <td>
+                <button onclick="deleteTicket('${ticket.ticketId}')">Delete</button>
+            </td>
+        `;
+
+        ticketList.appendChild(row);
+    }
+
+    function saveTicketToLocalStorage(ticket) {
+        let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+        tickets.push(ticket);
+        localStorage.setItem('tickets', JSON.stringify(tickets));
+    }
+
+    function deleteTicket(ticketId) {
+        let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+        tickets = tickets.filter(ticket => ticket.ticketId !== ticketId);
+        localStorage.setItem('tickets', JSON.stringify(tickets));
+
+        const rowToDelete = document.querySelector(`[data-ticket-id="${ticketId}"]`);
+        if (rowToDelete) {
+            rowToDelete.remove();
+        }
+    }
+
+    function calculateTimeLeft(expirationDate) {
+        const now = new Date();
+        const timeDiff = expirationDate - now;
+
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const months = Math.floor(days / 30);
+        const years = Math.floor(months / 12);
+
+        if (years > 0) {
+            return `${years} years, ${months % 12} months, ${days % 30} days`;
+        } else if (months > 0) {
+            return `${months} months, ${days % 30} days`;
+        } else {
+            return `${days} days`;
+        }
+    }
+
+    window.onload = function() {
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (loggedInUser) {
+            showProfilePage(loggedInUser);
+            showTicketManagement();
+        }
+        loadTicketsFromLocalStorage();
+    };
+
+    function loadTicketsFromLocalStorage() {
+        const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+        tickets.forEach(ticket => {
+            let status = ticket.ticketType === 'client' ? getTicketStatus(new Date(ticket.expirationDate)) : `<span class="valid">No Expiry</span>`;
             appendTicketToTable(ticket, status);
-        }
-
-        function getTicketStatus(expirationDate) {
-            const now = new Date();
-            if (expirationDate > now) {
-                const timeLeft = calculateTimeLeft(expirationDate);
-                return `<span class="valid">Valid - Expires in ${timeLeft}</span>`;
-            } else {
-                return `<span class="expired">Expired</span>`;
-            }
-        }
-
-        function appendTicketToTable(ticket, status) {
-            const ticketList = document.getElementById('ticketList');
-            const row = document.createElement('tr');
-            row.setAttribute('data-ticket-id', ticket.ticketId);
-
-            const canRenew = new Date(ticket.expirationDate) < new Date();
-            const renewButton = ticket.ticketType === 'client' ? 
-                `<button class="renew-btn" onclick="renewTicket('${ticket.ticketId}')" ${!canRenew ? 'disabled' : ''}>Renew</button>` : '';
-
-            row.innerHTML = `
-                <td>${ticket.userName}</td>
-                <td>${ticket.ticketId}</td>
-                <td>${ticket.ticketType.charAt(0).toUpperCase() + ticket.ticketType.slice(1)}</td>
-                <td>${status}</td>
-                <td>
-                    ${renewButton}
-                    <button class="delete-btn" onclick="deleteTicket('${ticket.ticketId}')">Delete</button>
-                </td>
-            `;
-
-            ticketList.appendChild(row);
-        }
-
-        function saveTicketToLocalStorage(ticket) {
-            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
-            tickets.push(ticket);
-            localStorage.setItem('tickets', JSON.stringify(tickets));
-        }
-
-        function loadTicketsFromLocalStorage() {
-            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
-            tickets.forEach(ticket => {
-                const status = ticket.ticketType === 'client' ? getTicketStatus(new Date(ticket.expirationDate)) : `<span class="valid">No Expiry</span>`;
-                appendTicketToTable(ticket, status);
-            });
-        }
-
-        function deleteTicket(ticketId) {
-            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
-            tickets = tickets.filter(ticket => ticket.ticketId !== ticketId);
-            localStorage.setItem('tickets', JSON.stringify(tickets));
-
-            const rowToDelete = document.querySelector(`[data-ticket-id="${ticketId}"]`);
-            if (rowToDelete) {
-                rowToDelete.remove();
-            }
-        }
-
-        function renewTicket(ticketId) {
-            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
-            const ticket = tickets.find(ticket => ticket.ticketId === ticketId);
-
-            if (ticket) {
-                const newExpirationDate = new Date();
-                newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 3);
-
-                ticket.expirationDate = newExpirationDate;
-                ticket.status = getTicketStatus(newExpirationDate);
-
-                localStorage.setItem('tickets', JSON.stringify(tickets));
-
-                const row = document.querySelector(`[data-ticket-id="${ticketId}"]`);
-                const statusCell = row.querySelector('td:nth-child(4)');
-                const actionCell = row.querySelector('td:nth-child(5)');
-
-                statusCell.innerHTML = ticket.status;
-                actionCell.innerHTML = `
-                    <button class="delete-btn" onclick="deleteTicket('${ticket.ticketId}')">Delete</button>
-                `; 
-            }
-        }
-
-        function calculateTimeLeft(expirationDate) {
-            const now = new Date();
-            const timeDiff = expirationDate - now;
-
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const months = Math.floor(days / 30);
-            const years = Math.floor(months / 12);
-
-            if (years > 0) {
-                return `${years} years, ${months % 12} months, ${days % 30} days`;
-            } else if (months > 0) {
-                return `${months} months, ${days % 30} days`;
-            } else {
-                return `${days} days`;
-            }
-        }
-    </script>
+        });
+    }
+</script>
 </body>
 </html>
